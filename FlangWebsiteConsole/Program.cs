@@ -71,15 +71,27 @@ namespace FlangWebsiteConsole
         }
         private static WebResponse Website_onVisit(Website sender, WebsiteContext context)
         {
-            string filePath = System.IO.Path.Combine("www", context.Request.Url.AbsolutePath.Substring(1));
+            string filePath = Path.Combine("www", context.Request.Url.AbsolutePath.Substring(1));
+            retry:
             foreach (string suffix in suffixes)
             {
                 string pathWithSuffix = filePath + suffix;
                 if (File.Exists(pathWithSuffix))
                 {
-                    return ParseFlang(File.ReadAllText(pathWithSuffix));
+                    if (suffix.Contains("flang"))
+                        return ParseFlang(File.ReadAllText(pathWithSuffix));
+                    else
+                        return WebResponse.FromFile(pathWithSuffix);
                 }
             }
+            if (filePath != Path.Combine("www", "fallback"))
+            { 
+                filePath = Path.Combine("www", "fallback");
+                goto retry;
+            }
+
+            filePath = Path.Combine("www", context.Request.Url.AbsolutePath.Substring(1));
+
             Console.WriteLine($"{filePath} not found");
             return WebResponse.FromGenerateError("File not found", $"{filePath} not found");
         }

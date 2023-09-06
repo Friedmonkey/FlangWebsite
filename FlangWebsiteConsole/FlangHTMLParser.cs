@@ -11,6 +11,7 @@ namespace FlangWebsiteConsole
             string FinalCode = string.Empty;
             this.Analizable = input.ToList();
             bool isFlang = false;
+            bool isFPrint = false;
 
             while (Current != '\0')
             {
@@ -18,6 +19,11 @@ namespace FlangWebsiteConsole
                 {
                     if (Find(")>"))
                     {
+                        if (isFPrint)
+                        { 
+                            isFPrint = false;
+                            FinalCode += ")";
+                        }
                         isFlang = false;
                         continue;
                     }
@@ -35,6 +41,15 @@ namespace FlangWebsiteConsole
                         //FinalText += Current;
                         Position++;
                         FinalCode += $" POSITION = {FinalText.Length}; ";
+                        continue;
+                    }
+                    if (Find("<(="))
+                    {
+                        isFlang = true;
+                        isFPrint = true;
+                        //FinalText += Current;
+                        //Position++;
+                        FinalCode += $" POSITION = {FinalText.Length}; print(";
                         continue;
                     }
                     else

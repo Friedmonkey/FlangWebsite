@@ -27,9 +27,9 @@ namespace FlangWebsite
             }
         }
         public byte[]? RawBytes { get; set; } = null;
-        public void FromFile(string path)
+        public static WebResponse FromFile(string path)
         {
-            this.ContentAsString = File.ReadAllText(path);
+            return new WebResponse(File.ReadAllBytes(path));
         }
         #region textGeneraters
         public static WebResponse FromGenerateError(string errorTitle, string errorDescription, string script = "", string css = "")
