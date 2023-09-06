@@ -190,24 +190,16 @@ namespace FlangWebsite
                     if (ipAddres == "::1")
                         ipAddres = "127.0.0.1";
                     context.IpAddress = ipAddres;
-
                     WebResponse webResponse = onVisit?.Invoke(this, context);
 
                     if (webResponse == null)
                         continue;
 
-                    if (webResponse.RawBytes != null)
-                    {
-                        await res.OutputStream.WriteAsync((byte[])webResponse.RawBytes);
-                        res.Close();
-                        continue;
-                    }
-                    else
-                    {
-                        await res.OutputStream.WriteAsync((byte[])webResponse.RawBytes);
-                        res.Close();
-                        continue;
-                    }
+
+                    await res.OutputStream.WriteAsync((byte[])webResponse.RawBytes);
+                    res.Close();
+                    continue;
+
                 }
                 catch (Exception ex)
                 {

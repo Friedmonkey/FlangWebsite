@@ -72,25 +72,30 @@ namespace FlangWebsiteConsole
 
             website.onVisit += Website_onVisit;
             website.SetPort(7902);
+            Console.WriteLine(website.PotentialAddress);
+            //website.OpenFriedPort();
             website.Start();
         }
         private static WebResponse Website_onVisit(Website sender, WebsiteContext context)
         {
-            string filePath = Path.Combine("www", context.Request.Url.AbsolutePath.Substring(1));
+            string url = context.Request.Url.LocalPath.Substring(1);
+            if (url.Contains("^"))
+                url = url.Split('^').Last();
+            string filePath = Path.Combine("www", url);
             retry:
             foreach (string suffix in suffixes)
             {
                 string pathWithSuffix = filePath + suffix;
                 if (File.Exists(pathWithSuffix))
                 {
-                    if (suffix.Contains("flang") || pathWithSuffix.EndsWith(".flang"))
+                    if (suffix.Contains("flang") || pathWithSuffix.ToLower().EndsWith(".flang"))
                         return ParseFlang(File.ReadAllText(pathWithSuffix), context);
                     else
                         return WebResponse.FromFile(pathWithSuffix);
                 }
             }
             if (filePath != Path.Combine("www", "fallback"))
-            { 
+            {
                 filePath = Path.Combine("www", "fallback");
                 goto retry;
             }
