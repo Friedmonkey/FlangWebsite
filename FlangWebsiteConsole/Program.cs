@@ -13,16 +13,21 @@ using System.IO;
 
 namespace FlangWebsiteConsole
 {
-    public class webIO : LanguageExtention
+    public class webIO : IO
     {
-        public override List<FlangMethod> InjectMethods()
-        {
-            List<FlangMethod> methods = new()
-            {
-                new FlangMethod("print", WebPrint, "string message"),
-            };
+        //public override List<FlangMethod> InjectMethods()
+        //{
+        //    List<FlangMethod> methods = new()
+        //    {
+        //        new FlangMethod("print", WebPrint, "string message"),
+        //    };
 
-            return methods;
+        //    return methods;
+        //}
+        public override void Intercept()
+        {
+            InterRemoveMethod("read");
+            InterReplaceMethod("print",WebPrint);
         }
         public static FValue WebPrint(Scope scope, List<FValue> arguments)
         {
@@ -78,8 +83,8 @@ namespace FlangWebsiteConsole
                 string pathWithSuffix = filePath + suffix;
                 if (File.Exists(pathWithSuffix))
                 {
-                    if (suffix.Contains("flang"))
-                        return ParseFlang(File.ReadAllText(pathWithSuffix));
+                    if (suffix.Contains("flang") || pathWithSuffix.EndsWith(".flang"))
+                        return ParseFlang(File.ReadAllText(pathWithSuffix), context);
                     else
                         return WebResponse.FromFile(pathWithSuffix);
                 }
@@ -95,7 +100,7 @@ namespace FlangWebsiteConsole
             Console.WriteLine($"{filePath} not found");
             return WebResponse.FromGenerateError("File not found", $"{filePath} not found");
         }
-        private static WebResponse ParseFlang(string input)
+        private static WebResponse ParseFlang(string input,WebsiteContext context)
         {
             //var lines = Regex.Split(input, "\r\n|\r|\n");
             FlangHTMLParser parser = new FlangHTMLParser();
@@ -107,6 +112,11 @@ namespace FlangWebsiteConsole
             Flang.ImportNative<Lang>("lang");
             Flang.ImportNative<webIO>("io");
             Flang.AddVariable("POSITION", 0);
+            Flang.AddVariable("PAGE", context.Page);
+            Flang.AddVariable("URL", context.Request.Url);
+            Flang.AddVariable("CONTENT", context.Request.ContentRaw);
+            Flang.AddDictionary<string, object>("GET", context.Request.QueryString.ToDictionary());
+            Flang.AddDictionary<string, object>("POST",context.Request.ContentDict);
             Flang.AddDictionary<int, string>("TEXT", new Dictionary<int, string>());
 
             string Code = $"""

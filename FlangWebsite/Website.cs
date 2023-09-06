@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using NetFwTypeLib;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace FlangWebsite
 {
@@ -154,7 +157,30 @@ namespace FlangWebsite
                     request.Headers = req.Headers;
                     request.QueryString = req.QueryString;
                     request.KeepAlive = req.KeepAlive;
+                    request.HasEntityBody = req.HasEntityBody;
                     request.InputStream = req.InputStream;
+                    request.ContentDict = new Dictionary<string, object>();
+
+                    if (req.HasEntityBody)
+                    {
+                        using (var reader = new StreamReader(req.InputStream, req.ContentEncoding))
+                        {
+                            request.ContentRaw = reader.ReadToEnd();
+                        }
+
+                        if (req.ContentType == "application/x-www-form-urlencoded")
+                        {
+                            string[] parts = request.ContentRaw.Split('&');
+
+                            foreach (string part in parts)
+                            {   
+                                string[] urlEncodedData = part.Split('=');
+                                if (urlEncodedData.Length == 0) continue;
+                                if (urlEncodedData.Length == 1) request.ContentDict.Add(urlEncodedData[0], 0);
+                                if (urlEncodedData.Length == 2) request.ContentDict.Add(urlEncodedData[0], HttpUtility.UrlDecode(urlEncodedData[1]));
+                            }
+                        }
+                    }
 
                     WebsiteContext context = new WebsiteContext();
                     context.Request = request;
@@ -349,7 +375,26 @@ namespace FlangWebsite
             return default(TValue);
         }
 
+        /// <summary>
+        ///     A NameValueCollection extension method that converts the @this to a dictionary.
+        /// </summary>
+        /// <param name="this">The @this to act on.</param>
+        /// <returns>@this as an IDictionary&lt;string,object&gt;</returns>
+        public static Dictionary<string, object> ToDictionary(this NameValueCollection @this)
+        {
+            var dict = new Dictionary<string, object>();
 
+            if (@this != null)
+            {
+                foreach (string key in @this.AllKeys)
+                {
+                    if (key is not null)
+                        dict.Add(key, @this[key]);
+                }
+            }
+
+            return dict;
+        }
         public static string ReplaceFirst(this string text, string search, string replace)
         {
             int pos = text.IndexOf(search);
