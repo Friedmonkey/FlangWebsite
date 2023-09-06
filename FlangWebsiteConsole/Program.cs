@@ -69,6 +69,7 @@ namespace FlangWebsiteConsole
         static void Main(string[] args)
         {
             website = new Website();
+            Directory.SetCurrentDirectory(Path.GetFullPath("www"));
 
             website.onVisit += Website_onVisit;
             website.SetPort(7902);
@@ -81,7 +82,7 @@ namespace FlangWebsiteConsole
             string url = context.Request.Url.LocalPath.Substring(1);
             if (url.Contains("^"))
                 url = url.Split('^').Last();
-            string filePath = Path.Combine("www", url);
+            string filePath = url;
             retry:
             foreach (string suffix in suffixes)
             {
@@ -94,13 +95,13 @@ namespace FlangWebsiteConsole
                         return WebResponse.FromFile(pathWithSuffix);
                 }
             }
-            if (filePath != Path.Combine("www", "fallback"))
+            if (filePath != "fallback")
             {
-                filePath = Path.Combine("www", "fallback");
+                filePath = "fallback";
                 goto retry;
             }
 
-            filePath = Path.Combine("www", context.Request.Url.AbsolutePath.Substring(1));
+            filePath = context.Request.Url.LocalPath.Substring(1);
 
             Console.WriteLine($"{filePath} not found");
             return WebResponse.FromGenerateError("File not found", $"{filePath} not found");
