@@ -52,5 +52,19 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\FriedLanguage\FLang\Friedlang.csproj">
+      <Project>{90e18442-2227-46bf-bb4e-c0db3b143990}</Project>
+      <Name>Friedlang</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\FriedLanguage\FriedLanguage\FriedLanguage.csproj">
+      <Project>{3840a6f5-a675-4312-a700-7c6951b786ec}</Project>
+      <Name>FriedLanguage</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FlangWebsite\FlangWebsite.csproj">
+      <Project>{99bc922c-0109-4ca1-bf54-b65658fc94b0}</Project>
+      <Name>FlangWebsite</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

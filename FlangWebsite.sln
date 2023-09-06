@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlangWebsite", "FlangWebsit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlangWebsiteConsole", "FlangWebsiteConsole\FlangWebsiteConsole.csproj", "{90CBE20D-A605-4778-B5C4-2DCD87DE7EE0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Friedlang", "..\FriedLanguage\FLang\Friedlang.csproj", "{90E18442-2227-46BF-BB4E-C0DB3B143990}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FriedLanguage", "..\FriedLanguage\FriedLanguage\FriedLanguage.csproj", "{3840A6F5-A675-4312-A700-7C6951B786EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{90CBE20D-A605-4778-B5C4-2DCD87DE7EE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90CBE20D-A605-4778-B5C4-2DCD87DE7EE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90CBE20D-A605-4778-B5C4-2DCD87DE7EE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90E18442-2227-46BF-BB4E-C0DB3B143990}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90E18442-2227-46BF-BB4E-C0DB3B143990}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90E18442-2227-46BF-BB4E-C0DB3B143990}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90E18442-2227-46BF-BB4E-C0DB3B143990}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3840A6F5-A675-4312-A700-7C6951B786EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3840A6F5-A675-4312-A700-7C6951B786EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3840A6F5-A675-4312-A700-7C6951B786EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3840A6F5-A675-4312-A700-7C6951B786EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
