@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FlangWebsite;
+using FriedLang.NativeLibraries;
+using System.IO;
 
 namespace FlangWebsiteConsole
 {
@@ -56,8 +59,71 @@ namespace FlangWebsiteConsole
     }
     internal class Program
     {
+        public static List<string> suffixes = new() { "", ".html", ".flang", "index.html", "index.flang", "/index.html", "/index.flang" };
+        public static Website website;
         static void Main(string[] args)
         {
+            website = new Website();
+
+            website.onVisit += Website_onVisit;
+            website.SetPort(7902);
+            website.Start();
+        }
+        private static WebResponse Website_onVisit(Website sender, WebsiteContext context)
+        {
+            string filePath = System.IO.Path.Combine("www", context.Request.Url.AbsolutePath.Substring(1));
+            foreach (string suffix in suffixes)
+            {
+                string pathWithSuffix = filePath + suffix;
+                if (File.Exists(pathWithSuffix))
+                {
+                    return ParseFlang(File.ReadAllText(pathWithSuffix));
+                }
+            }
+            Console.WriteLine($"{filePath} not found");
+            return WebResponse.FromGenerateError("File not found", $"{filePath} not found");
+        }
+        private static WebResponse ParseFlang(string input)
+        {
+            //var lines = Regex.Split(input, "\r\n|\r|\n");
+            FlangHTMLParser parser = new FlangHTMLParser();
+            (var FinalText, var FinalCode) = parser.Parse(input);
+
+            //Flang.ImportNative
+            FLang Flang = new FLang();
+
+            Flang.ImportNative<Lang>("lang");
+            Flang.ImportNative<webIO>("io");
+            Flang.AddVariable("POSITION", 0);
+            Flang.AddDictionary<int, string>("TEXT", new Dictionary<int, string>());
+
+            string Code = $"""
+            import native io;
+            import native lang;
+            {FinalCode}
+            return TEXT;
+""";
+            object output = Flang.RunCode(Code, false);
+            List<(object, object)> outputDict = FLang.ListFromFriedDictionary(output);
+
+            if (outputDict is null)
+            {
+                return WebResponse.FromGenerateError("An Error occured",Flang.LastError);
+            }
+            else
+            {
+                int backtrack = 0;
+                for (int i = 0; i < outputDict.Count(); i++)
+                {
+                    var (key, value) = outputDict.ElementAt(i);
+                    if (key is not int index)
+                        continue;
+                    FinalText = FinalText.Insert(index + backtrack, value.ToString());
+                    backtrack += value.ToString().Length;
+                }
+                return new WebResponse(FinalText);
+            }
+
         }
     }
 }
