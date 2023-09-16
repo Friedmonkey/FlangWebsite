@@ -43,6 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnalizerBase.cs" />
+    <Compile Include="FlangHTMLParser.cs" />
     <Compile Include="WebResponse.cs" />
     <Compile Include="Website.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
